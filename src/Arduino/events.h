@@ -15,6 +15,7 @@ class Schedule
   public:
     Schedule(Source*, Source*, Source*, Source*, Source*); // solar, wind, hydro, gas, coal
     void runClock();
+    int getTime();
     Source* solar;
     Source* wind;
     Source* hydro;

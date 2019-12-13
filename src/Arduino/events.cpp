@@ -16,6 +16,7 @@ Schedule::Schedule(Source* solar, Source* wind, Source* hydro, Source* gas, Sour
   this->gas = gas;
   this->coal = coal;
 
+
   solar->setPowerAvailable(0);
   wind->setPowerAvailable(0);
   hydro->setPowerAvailable(80);
@@ -33,7 +34,7 @@ Schedule::Schedule(Source* solar, Source* wind, Source* hydro, Source* gas, Sour
 //PUBLIC
 void Schedule::runClock(void)
 {
-  timeUpdate();  
+  timeUpdate();
   solar->update();
   wind->update();
   hydro->update();
@@ -48,15 +49,19 @@ void Schedule::timeUpdate(void){
     minute++;
     minuteTasks();
     if (minute >= 60){      //ONE HOUR HAS PASSED
-      hour++;            
+      hour++;
       minute = 0;
       if (hour >= 24) hour =0;
-      Serial.print(hour);
-      Serial.print(":00  Wind:");
       hourTasks();
     }
     lastMinMillis = currentMillis;
   }
+}
+
+int Schedule::getTime(){
+  int theTime;
+  theTime = hour*100 + minute;
+  return theTime;
 }
 
 void Schedule::hourTasks(void){
@@ -65,8 +70,8 @@ void Schedule::hourTasks(void){
   int windChange = random(-10,10);
   windSpeed = windSpeed + windChange;
   windSpeed = constrain(windSpeed,0,200);
-  Serial.print(windSpeed/10);
-  Serial.print(" mph   cloudy:");
+//  Serial.print(windSpeed/10);
+//  Serial.print(" mph   cloudy:");
   if (windSpeed > 99){
     wind->setPowerAvailable((windSpeed-100)) ;
   }
@@ -74,16 +79,16 @@ void Schedule::hourTasks(void){
   //CLOUD COVER
   cloudCover = random(-50,50);
   cloudCover = constrain(cloudCover,0,50);
-  Serial.print(cloudCover*2);
-  Serial.println("%");
+//  Serial.print(cloudCover*2);
+//  Serial.println("%");
   cloudCover = (100/4); // - cloudCover)/4;
-  
+
 }
 
 void Schedule::minuteTasks(void){
 
   //SOLAR
-  if ((hour > 6) && (hour < 11)) solar_percent = ((hour-7) * cloudCover + (minute*cloudCover)/59); 
+  if ((hour > 6) && (hour < 11)) solar_percent = ((hour-7) * cloudCover + (minute*cloudCover)/59);
   if ((hour > 16) && (hour < 21)) solar_percent = 100 - ((hour-17) * cloudCover + (minute*cloudCover)/59);
   if ((hour >=11) && (hour<=16)) solar_percent = (cloudCover*4);
   solar->setPowerAvailable(solar_percent);
