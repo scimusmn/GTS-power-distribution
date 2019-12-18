@@ -16,7 +16,9 @@ class App extends Component {
       handshake: false,
       pingArduinoStatus: false,
       refreshPortCount: 0,
-      clockTime: 0,
+      clockHour: 0,
+      clockMin: 0,
+      isPM: false,
     };
 
     this.onSerialData = this.onSerialData.bind(this);
@@ -45,10 +47,23 @@ class App extends Component {
       });
     }
 
-    if (data.message === 'clock') {
-      this.setState({
-        clockTime: data.value,
-      });
+    if (handshake) {
+      if ( data.message === 'clock' ) {
+        var isPM = false;
+        var clockHour = ( data.value / 100 ).tofixed(0);
+        if ( (clockHour > 11) && (clockHour < 24) )
+          isPM == true;
+
+        var clockMin = data.value - clockHour * 100;
+        if (clockHour) > 12 {
+          clockHour = clockHour - 12;
+        }
+        this.setState({
+          clockHour: clockHour,
+          clockMin: clockMin,
+          isPM: isPM,
+        });
+      }
     }
   }
 
@@ -60,7 +75,7 @@ class App extends Component {
     this.setState({ pingArduinoStatus: true });
     sendData(JSON.stringify(WAKE_ARDUINO));
 
-    setTimeout(() => { this.pingArduino(); }, 5000);
+    setTimeout(() => { this.pingArduino(); }, 50000);
   }
 
   refreshPorts() {
@@ -97,11 +112,9 @@ class App extends Component {
     return (
       <Fragment>
         <Container>
-          <p>
-            Clock:
-            {' '}
-            {clockTime}
-          </p>
+          <h1>
+            {clockHour} ':' {clockMin}{isPM}
+          </h1>
         </Container>
       </Fragment>
     );

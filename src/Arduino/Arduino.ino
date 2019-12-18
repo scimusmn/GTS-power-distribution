@@ -8,6 +8,7 @@
 
 int totalPower = 0;
 int lastTotalPower = 0;
+int pastTime = 0;
 
 SerialManager serialManager;
 
@@ -38,16 +39,24 @@ void setup() {
 void loop() {
 
   schedule1.runClock();
-  serialManager.sendJsonMessage("clock", schedule1.getTime());
-  
+  int theTime = schedule1.getTime();
+
+  if ((pastTime != theTime)  && (theTime % 5 == 0)){
+    serialManager.sendJsonMessage("clock", theTime );
+    pastTime = theTime;
+    serialManager.sendJsonMessage("arduino-ready", 1);
+  }
+
   totalPower =  Source1.getPowerProduced() + Source2.getPowerProduced() + Source3.getPowerProduced() + Source4.getPowerProduced() + Source5.getPowerProduced();
 
   if (totalPower != lastTotalPower){
     int P = totalPower/(s1_max_pwr + s2_max_pwr + s3_max_pwr + s4_max_pwr + s5_max_pwr);
     Production.setLevel(P);
     lastTotalPower =  totalPower;
-    serialManager.sendJsonMessage("totalPower", totalPower);
+    //serialManager.sendJsonMessage("totalPower", totalPower);
   }
+
+  serialManager.idle();
 }
 
 void onParse(char* message, int value) {
@@ -66,8 +75,8 @@ void onParse(char* message, int value) {
 //  }
   if (strcmp(message, "wake-arduino") == 0 && value == 1) {
     serialManager.sendJsonMessage("arduino-ready", 1);
-  }
-  else {
+  } else {
     serialManager.sendJsonMessage("unknown-command", 1);
+    serialManager.sendJsonMessage(message, value);
   }
 }
