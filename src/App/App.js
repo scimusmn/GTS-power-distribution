@@ -18,7 +18,7 @@ class App extends Component {
       refreshPortCount: 0,
       clockHour: 0,
       clockMin: 0,
-      isPM: false,
+      amOrPm: 'AM',
     };
 
     this.onSerialData = this.onSerialData.bind(this);
@@ -34,6 +34,10 @@ class App extends Component {
   }
 
   onSerialData(data) {
+    let amOrPm = 'AM';
+    let hour;
+    let min;
+
     const {
       handshake,
     } = this.state;
@@ -48,21 +52,16 @@ class App extends Component {
     }
 
     if (handshake) {
-      if ( data.message === 'clock' ) {
-        var isPM = false;
-        var clockHour = ( data.value / 100 ).tofixed(0);
-        if ( (clockHour > 11) && (clockHour < 24) )
-          isPM == true;
-
-        var clockMin = data.value - clockHour * 100;
-        if (clockHour) > 12 {
-          clockHour = clockHour - 12;
+      if (data.message === 'clock') {
+        min = data.value % 100;
+        hour = (data.value - min) / 100;
+        if (hour > 11 && hour < 24) {
+          amOrPm = 'PM';
         }
-        this.setState({
-          clockHour: clockHour,
-          clockMin: clockMin,
-          isPM: isPM,
-        });
+        if (hour > 12) {
+          hour -= 12;
+        }
+        this.setState({ clockHour: hour, clockMin: min, amOrPm });
       }
     }
   }
@@ -75,7 +74,7 @@ class App extends Component {
     this.setState({ pingArduinoStatus: true });
     sendData(JSON.stringify(WAKE_ARDUINO));
 
-    setTimeout(() => { this.pingArduino(); }, 50000);
+    setTimeout(() => { this.pingArduino(); }, 5000);
   }
 
   refreshPorts() {
@@ -98,8 +97,9 @@ class App extends Component {
 
   render() {
     const {
-      clockTime, handshake,
+      clockHour, clockMin, amOrPm, handshake,
     } = this.state;
+    let isZero = ':';
 
     if (!handshake) {
       return (
@@ -109,11 +109,18 @@ class App extends Component {
       );
     }
 
+    if (clockMin < 10) {
+      isZero = ':0';
+    }
+
     return (
       <Fragment>
         <Container>
           <h1>
-            {clockHour} ':' {clockMin}{isPM}
+            {clockHour}
+            {isZero}
+            {clockMin}
+            {amOrPm}
           </h1>
         </Container>
       </Fragment>

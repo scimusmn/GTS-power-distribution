@@ -25,8 +25,8 @@ Schedule::Schedule(Source* solar, Source* wind, Source* hydro, Source* gas, Sour
 
   currentMillis = 0;
   lastMinMillis = 0;
-  minute = 59;  // start 1 min before midnight
-  hour = 23;
+  minute = 0;  // start 1 min before midnight
+  hour = 24;
   solar_percent = 0;
   windSpeed = 150;
 }
@@ -51,7 +51,7 @@ void Schedule::timeUpdate(void){
     if (minute >= 60){      //ONE HOUR HAS PASSED
       hour++;
       minute = 0;
-      if (hour >= 24) hour =0;
+      if (hour > 24) hour =1;
       hourTasks();
     }
     lastMinMillis = currentMillis;
