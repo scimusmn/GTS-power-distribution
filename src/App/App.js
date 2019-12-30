@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Container } from 'reactstrap';
+import { Button, Container } from 'reactstrap';
 import propTypes from 'prop-types';
 import { ARDUINO_READY, WAKE_ARDUINO } from '../Arduino/arduino-base/ReactSerial/arduinoConstants';
 import IPC from '../Arduino/arduino-base/ReactSerial/IPCMessages';
@@ -24,6 +24,7 @@ class App extends Component {
     this.onSerialData = this.onSerialData.bind(this);
     this.pingArduino = this.pingArduino.bind(this);
     this.refreshPorts = this.refreshPorts.bind(this);
+    this.sendClick = this.sendClick.bind(this);
   }
 
   componentDidMount() {
@@ -64,6 +65,16 @@ class App extends Component {
         this.setState({ clockHour: hour, clockMin: min, amOrPm });
       }
     }
+  }
+
+  sendClick(msg) {
+    console.log('sendClick:', msg);
+
+    // This is where we pass it through
+    // our HOC method to Stele, which passes
+    // to Serial device.
+    const { sendData } = this.props;
+    sendData(msg);
   }
 
   pingArduino() {
@@ -122,6 +133,12 @@ class App extends Component {
             {clockMin}
             {amOrPm}
           </h1>
+          <Button
+            color="warning"
+            onClick={() => this.sendClick(IPC.FLUSH_COMMAND)}
+          >
+            Clear
+          </Button>
         </Container>
       </Fragment>
     );
