@@ -1,13 +1,13 @@
 /*
-  Events.h - Events library for power distribution Gateway to Science
+  Schedule.h - Schedule library for power distribution Gateway to Science
   Joe Meyer created 10/18/2019 at the science museum of mn
 */
 #include "Arduino.h"
 #include "source.h"
 
 // ensure this library description is only included once
-#ifndef Events_h
-#define Events_h
+#ifndef Schedule_h
+#define Schedule_h
 
 
 class Schedule
