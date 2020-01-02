@@ -70,8 +70,6 @@ void Schedule::hourTasks(void){
   int windChange = random(-10,10);
   windSpeed = windSpeed + windChange;
   windSpeed = constrain(windSpeed,0,200);
-//  Serial.print(windSpeed/10);
-//  Serial.print(" mph   cloudy:");
   if (windSpeed > 99){
     wind->setPowerAvailable((windSpeed-100)) ;
   }

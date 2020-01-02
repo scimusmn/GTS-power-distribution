@@ -28,5 +28,5 @@ void BarGraph::setLevel(int percentage){
       pixels.setPixelColor(i-1, pixels.Color(green, red, blue)); //
     }
   }
-  pixels.show();
+ pixels.show();
 }

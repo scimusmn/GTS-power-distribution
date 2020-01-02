@@ -44,7 +44,6 @@ void loop() {
   if ((pastTime != theTime)  && (theTime % 5 == 0)){
     serialManager.sendJsonMessage("clock", theTime );
     pastTime = theTime;
-    serialManager.sendJsonMessage("arduino-ready", 1);
   }
 
   totalPower =  Source1.getPowerProduced() + Source2.getPowerProduced() + Source3.getPowerProduced() + Source4.getPowerProduced() + Source5.getPowerProduced();
