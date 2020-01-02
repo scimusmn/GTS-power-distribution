@@ -13,14 +13,15 @@ BarGraph::BarGraph(int neo_pin, int number_pixels, int G, int R, int B)
   pinMode(neo_pin, OUTPUT);
   pixels = Adafruit_NeoPixel (num_pixels, neo_pin, NEO_RGB + NEO_KHZ800);
   pixels.begin();
-  level = 0;
+  percentage = 0;
   green = G;
   blue = B;
   red = R;
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
-void BarGraph::setLevel(int percentage){
+void BarGraph::setPercent(int p){
+  percentage = p;
   int P = map(percentage,0,100,0,num_pixels);
   pixels.clear();
   for (int i = 1; i <= num_pixels; i++) { // For each pixel...
@@ -29,4 +30,14 @@ void BarGraph::setLevel(int percentage){
     }
   }
  pixels.show();
+}
+
+void BarGraph::setColor(int G, int R, int B){
+  green = G;
+  blue = B;
+  red = R;
+}
+
+int BarGraph::getPercent(){
+  return percentage;
 }

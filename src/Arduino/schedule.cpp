@@ -77,9 +77,7 @@ void Schedule::hourTasks(void){
   //CLOUD COVER
   cloudCover = random(-50,50);
   cloudCover = constrain(cloudCover,0,50);
-//  Serial.print(cloudCover*2);
-//  Serial.println("%");
-  cloudCover = (100/4); // - cloudCover)/4;
+  cloudCover = (100/4); // -   
 
 }
 

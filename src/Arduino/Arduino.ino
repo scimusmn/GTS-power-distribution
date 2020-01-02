@@ -1,6 +1,6 @@
 #include "config.h"
 #include "HardwareSerial.h"
-#include "events.h"
+#include "schedule.h"
 #include "control.h"
 #include "source.h"
 #include "Adafruit_NeoPixel.h"
@@ -31,29 +31,40 @@ void setup() {
     onParse(message, value);
   }, arduinoJsonDebug);
 
-
-  Production.setLevel(0);
-  Demand.setLevel(50);
+  Production.setPercent(0);
+  Demand.setPercent(50);
 }
 
 void loop() {
 
+  //update power produced BarGraph
+  totalPower = Source1.getPowerProduced() + Source2.getPowerProduced() + Source3.getPowerProduced() + Source4.getPowerProduced() + Source5.getPowerProduced();
+  if (totalPower != lastTotalPower){
+    Production.setPercent(totalPower/(s1_max_pwr + s2_max_pwr + s3_max_pwr + s4_max_pwr + s5_max_pwr));
+    lastTotalPower =  totalPower;
+  }
+
+  //compare production to demand
+  if (Production.getPercent() < Demand.getPercent()){
+    Production.setColor(0,10,0);
+  }else {
+    Production.setColor(10,0,0);
+  }
+
+
+
+
   schedule1.runClock();
   int theTime = schedule1.getTime();
 
-  if ((pastTime != theTime)  && (theTime % 5 == 0)){
+  if ((pastTime != theTime)  && (theTime % 5 == 0)){  // only send clock every "5 sec"
     serialManager.sendJsonMessage("clock", theTime );
     pastTime = theTime;
   }
 
-  totalPower =  Source1.getPowerProduced() + Source2.getPowerProduced() + Source3.getPowerProduced() + Source4.getPowerProduced() + Source5.getPowerProduced();
 
-  if (totalPower != lastTotalPower){
-    int P = totalPower/(s1_max_pwr + s2_max_pwr + s3_max_pwr + s4_max_pwr + s5_max_pwr);
-    Production.setLevel(P);
-    lastTotalPower =  totalPower;
-    //serialManager.sendJsonMessage("totalPower", totalPower);
-  }
+
+
 
   serialManager.idle();
 }

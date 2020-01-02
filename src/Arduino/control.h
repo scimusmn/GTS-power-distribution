@@ -15,13 +15,15 @@ class BarGraph
     // user-accessible "public" interface
   public:
     BarGraph(int, int, int, int, int); //neo pin, num pixel
-    void setLevel(int); //0 to 100 indicating percent
+    int getPercent();
+    void setPercent(int); //0 to 100 indicating percent
+    void setColor(int, int, int); //0 to 100 indicating percent
 
     // library-accessible "private" interface
   private:
     Adafruit_NeoPixel pixels;
     int num_pixels;
-    int level;
+    int percentage;
     int red;
     int blue;
     int green;
