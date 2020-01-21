@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Container } from 'reactstrap';
+import { Container } from 'reactstrap';
 import propTypes from 'prop-types';
 import { ARDUINO_READY, WAKE_ARDUINO } from '../Arduino/arduino-base/ReactSerial/arduinoConstants';
 import IPC from '../Arduino/arduino-base/ReactSerial/IPCMessages';
@@ -19,6 +19,8 @@ class App extends Component {
       clockHour: 0,
       clockMin: 0,
       amOrPm: 'AM',
+      windSpeed: 0,
+      cloudCover: 0,
     };
 
     this.onSerialData = this.onSerialData.bind(this);
@@ -38,6 +40,8 @@ class App extends Component {
     let amOrPm = 'AM';
     let hour;
     let min;
+    let windSpeed;
+    let cloudCover;
 
     const {
       handshake,
@@ -53,6 +57,15 @@ class App extends Component {
     }
 
     if (handshake) {
+      if (data.message === 'wind') {
+        windSpeed = data.value;
+        this.setState({ windSpeed });
+      }
+      if (data.message === 'cloud') {
+        cloudCover = data.value;
+        this.setState({ cloudCover });
+      }
+
       if (data.message === 'clock') {
         min = data.value % 100;
         hour = (data.value - min) / 100;
@@ -92,7 +105,7 @@ class App extends Component {
     const { sendData, startIpcCommunication, stopIpcCommunication } = this.props;
     const { refreshPortCount } = this.state;
 
-    if (refreshPortCount === 2) {
+    if (refreshPortCount === 50) {
       this.setState({ handshake: false });
 
       console.log('sending RESET-PORT');
@@ -108,7 +121,7 @@ class App extends Component {
 
   render() {
     const {
-      clockHour, clockMin, amOrPm, handshake,
+      clockHour, clockMin, amOrPm, handshake, windSpeed, cloudCover,
     } = this.state;
     let isZero = ':';
 
@@ -133,12 +146,15 @@ class App extends Component {
             {clockMin}
             {amOrPm}
           </h1>
-          <Button
-            color="warning"
-            onClick={() => this.sendClick(IPC.FLUSH_COMMAND)}
-          >
-            Clear
-          </Button>
+
+          <h2>
+            {windSpeed}
+            mph winds
+          </h2>
+          <h2>
+            {cloudCover}
+            % Cloud Cover
+          </h2>
         </Container>
       </Fragment>
     );

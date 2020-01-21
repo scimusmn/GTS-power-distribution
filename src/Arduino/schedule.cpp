@@ -7,14 +7,16 @@
 #include "schedule.h"
 #include "config.h"
 #include "source.h"
+#include "arduino-base/Libraries/SerialManager.h"
 
-Schedule::Schedule(Source* solar, Source* wind, Source* hydro, Source* gas, Source* coal)
+Schedule::Schedule(Source* solar, Source* wind, Source* hydro, Source* gas, Source* coal, SerialManager* sM)
 {
   this->solar = solar;
   this->wind = wind;
   this->hydro = hydro;
   this->gas = gas;
   this->coal = coal;
+  this->serialManager = sM;
 
 
   solar->setPowerAvailable(0);
@@ -67,7 +69,7 @@ int Schedule::getTime(){
 void Schedule::hourTasks(void){
 
   //WIND
-  int windChange = random(-10,10);
+  int windChange = random(-9,10);
   windSpeed = windSpeed + windChange;
   windSpeed = constrain(windSpeed,0,200);
   if (windSpeed > 99){
@@ -77,8 +79,10 @@ void Schedule::hourTasks(void){
   //CLOUD COVER
   cloudCover = random(-50,50);
   cloudCover = constrain(cloudCover,0,50);
-  cloudCover = (100/4); // -   
+  serialManager->sendJsonMessage("cloud", cloudCover*2);
+  cloudCover = (100 - cloudCover)/4;
 
+  serialManager->sendJsonMessage("wind", windSpeed/10);
 }
 
 void Schedule::minuteTasks(void){

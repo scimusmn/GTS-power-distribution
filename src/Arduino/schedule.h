@@ -4,6 +4,7 @@
 */
 #include "Arduino.h"
 #include "source.h"
+#include "arduino-base/Libraries/SerialManager.h"
 
 // ensure this library description is only included once
 #ifndef Schedule_h
@@ -13,7 +14,7 @@
 class Schedule
 {
   public:
-    Schedule(Source*, Source*, Source*, Source*, Source*); // solar, wind, hydro, gas, coal
+    Schedule(Source*, Source*, Source*, Source*, Source*, SerialManager*); // solar, wind, hydro, gas, coal
     void runClock();
     int getTime();
     Source* solar;
@@ -21,6 +22,7 @@ class Schedule
     Source* hydro;
     Source* gas;
     Source* coal;
+    SerialManager* serialManager;
 
 
 
